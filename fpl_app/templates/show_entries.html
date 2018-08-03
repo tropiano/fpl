@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+<head>
+<link href="{{ url_for('static', filename='style.css') }}" rel='stylesheet' />
+</head>
+{% block body %}
+  
+<div class="container-fluid">
+  
+    <div class="row">
+        <div id='league'>
+        <h1><b>{{ entries[3][0].league_name }}</b></h1>
+        </div>
+    <div class="col-sm-6">
+      <br>
+
+      <div class="well" id="table">
+          <table class="table-striped" style="width:100%">
+              <tr>
+               <th></th>
+		       <th>Team</th>
+               <th>Manager</th>
+               <th>Points</th>
+		     </tr>
+	       {% for entry in entries[0] %}
+		     <tr>
+                 <td>{{ loop.index }}</td>
+                 <td>{{ entry.team_name }}</td>
+                 <td>{{ entry.name + " " + entry.surname }}</td>
+                 <td>{{ entry.points }}</td>
+		     </tr>	
+           {% endfor %}
+          </table>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <br>
+      
+      <div class="well" id="stats">
+          <h4>Best Players Record</h4> 
+          <h4>by Points</h4>
+          <br>
+          {% for entry in entries[1][0:3] %}
+            {{ entry.name + " " + entry.surname }}
+            {{ entry.season_name }}
+            <br>
+            {{ entry.points }} <small>points</small> 
+            <br>
+            <br>
+        {% endfor %}
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <br>
+      <div class="well" id="stats">
+        <h4>Best Players Record</h4> 
+        <h4>by Ranking</h4>
+        <br>
+        {% for entry in entries[2][0:3] %}
+          {{ entry.name + " " + entry.surname }}
+          {{ entry.season_name }}
+          <br>
+          {{ entry.rank }} <small>position</small> 
+          <br>
+          <br>
+      {% endfor %}
+      </div>    
+    </div>
+    </div>
+</div>
+</div>
+    	
+{% endblock %}

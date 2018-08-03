@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block body %}          
+<div class="container-fluid">  
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12"> 
+     <div id='banner'>
+      <h1><b>Fantasy Premier League Stats</b></h1>
+      <br>
+       <p>Get more from your Fantasy game</p>
+      <br>
+       <h3>Type here your Mini-league Id to start</h3>
+      <div class="col-xs-5"></div>
+      <div class="col-xs-2">
+      <form method="POST">
+        <div class="form-group"> 
+          <input name="leagueid" type="text" class="form-control form-control-lg" id="leagueid-input" placeholder="League Id">
+        </div>
+        <button type="submit" class="btn btn-primary">Create Stats</button>
+      </form>
+        </div>
+        <div class="col-xs-5"></div>      
+        </div>
+        </div>
+     </div>
+   </div>
+ </div>
+</div>
+
+
+<!--    <img src="images/diamond.png" alt="picture description" width="100">
+    <h2>Simple</h2>
+    <p>A simple app, <strong>very simple</strong> app</p>
+
+    <img src="images/heart.png" alt="picture description" width="100">
+    <h2>Awesome</h2>
+    <p>An awesome app, <strong>very awesome</strong> app</p>
+
+    <img src="images/laptop.png" alt="picture description" width="100">
+    <h2>Beautiful</h2>
+    <p>A beautiful app, <strong>very beautiful</strong> app</p> -->
+      <br>
+
+      <br>
+
+      <br>
+
+   <div id='footer'>
+    <p>Follow us on Social media</p>
+    <ul class='list-inline'>
+  <li><a href="https://www.facebook.com"><i class="fa fa-facebook fa-3x"></i></a></li>
+  <li><a href="https://twitter.com"><i class="fa fa-twitter fa-3x"></i></a></li>
+   </ul>
+   </div>
+{% endblock %}
