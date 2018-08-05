@@ -23,7 +23,7 @@ app.config.from_object(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fpl.db'
 db = SQLAlchemy(app)
 db.Model.metadata.reflect(db.engine)
-
+app.secret_key = 'T5%&/yHDfSTs'
 
 
 #create the models for Sqlalchemy 
@@ -87,7 +87,7 @@ def landing_page_post():
             league_name, league_users = fdb.get_league_infos(league_id)
             league_entry = Leagues(league_name=league_name, league_id=league_id, season='18-19')
         except:
-            flash('League Id not found')
+            flash('League Id not found', 'error')
             return redirect(url_for('landing_page'))
         db.session.add(league_entry)
         for u in league_users:
@@ -106,6 +106,13 @@ def league_info(league_id):
 
     entries = []
     
+    existing_league_ids = db.session.query(Leagues.league_id).all()
+    league_list = [i[0] for i in existing_league_ids]
+    print league_list
+    if int(league_id) not in league_list:
+        flash('No data for the requested League. Insert League Id in the form below to generate data for this League', 'error')
+        return redirect(url_for('landing_page'))
+        
     cur=db.session.query(Users.name, Users.surname, Teams.team_name).join(Teams,Teams.user_id==Users.user_id).filter(
           Teams.league_id == league_id).group_by(Teams.team_name).all()
     entries.append(cur)
