@@ -47,6 +47,7 @@
 
 #league{
     text-align: center;
+    color: #191d32;
 }
 
 .well{
@@ -55,10 +56,16 @@
 
 .well#table{
     font-size: 20px;
+    color: #191d32;
+    border: 5px solid black;
+    border-radius: 0px;
+    
 }
 
 .well#stats{
     font-size: 15px;
     text-align: center;
+    color: #191d32;
+    
 }
 

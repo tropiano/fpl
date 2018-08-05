@@ -13,6 +13,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
+import fill_db as fdb
 #from wtforms import Form, BooleanField, StringField, FloatField, DateField, IntegerField, validators
  
 
@@ -76,11 +77,26 @@ def landing_page_post():
     # Verify the league id doesn't exist yet
     # Create the league in the DB with a call to the API
     # Populate also users with the API call
-     
-    #processed_text = text.upper()
-    #return processed_text
-
-    return render_template('homepage.html', entries=entries)
+    existing_league_ids = db.session.query(Leagues.league_id).all()
+    if int(league_id) in existing_league_ids[0]:
+        return redirect(url_for('league_info', league_id=league_id))
+    else:
+        try:
+            league_name, league_users = fdb.get_league_infos(league_id)
+            league_entry = Leagues(league_name=league_name, league_id=league_id, season='18-19')
+        except:
+            flash('League Id not found')
+            return redirect(url_for('landing_page'))
+        db.session.add(league_entry)
+        for u in league_users:
+            team_info = Teams(team_id=u['id'], league_id=u['league'], team_name=u['entry_name'], user_id=u['entry'])
+            db.session.add(team_info)
+            user_info = fdb.extract_user_infos(u)
+            for ui in user_info:
+                ui_info = Users(user_id=ui[0], season=ui[1], season_name=ui[2], name=ui[3], surname=ui[4], points=ui[5], rank=ui[6])
+                db.session.add(ui_info)
+        db.session.commit()        
+        return redirect(url_for('league_info', league_id=league_id))
 
 
 @app.route('/<league_id>')
