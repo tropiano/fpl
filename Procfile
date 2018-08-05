@@ -1,2 +1,2 @@
-web: gunicorn app:fpl
+web: gunicorn app:fpl_app
 
