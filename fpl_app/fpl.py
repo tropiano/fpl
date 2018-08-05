@@ -108,7 +108,7 @@ def league_info(league_id):
     
     existing_league_ids = db.session.query(Leagues.league_id).all()
     league_list = [i[0] for i in existing_league_ids]
-    print league_list
+    #print league_list
     if int(league_id) not in league_list:
         flash('No data for the requested League. Insert League Id in the form below to generate data for this League', 'error')
         return redirect(url_for('landing_page'))
@@ -127,7 +127,7 @@ def league_info(league_id):
     res_sort = sorted(cur, key = lambda x: x[2], reverse = False)  
     entries.append(res_sort)
     
-    cur=db.session.query(Leagues.league_name).all()
+    cur=db.session.query(Leagues.league_name).filter(Leagues.league_id == league_id).all()
     entries.append(cur)
     
     return render_template('show_entries.html', entries=entries)
