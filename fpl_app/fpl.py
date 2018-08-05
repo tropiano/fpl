@@ -78,7 +78,9 @@ def landing_page_post():
     # Create the league in the DB with a call to the API
     # Populate also users with the API call
     existing_league_ids = db.session.query(Leagues.league_id).all()
-    if int(league_id) in existing_league_ids[0]:
+    league_list = [i[0] for i in existing_league_ids]
+    print league_list
+    if int(league_id) in league_list:
         return redirect(url_for('league_info', league_id=league_id))
     else:
         try:
