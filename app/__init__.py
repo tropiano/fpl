@@ -13,9 +13,40 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
-import fill_db as fdb
 #from wtforms import Form, BooleanField, StringField, FloatField, DateField, IntegerField, validators
  
+def get_league_infos(league_id):
+
+    url = 'https://fantasy.premierleague.com/drf/leagues-classic-standings/'+str(league_id)+'?phase=1&le-page=1&ls-page=1'
+    r = requests.get(url)
+    jsonResponse = r.json()
+    users = jsonResponse["new_entries"]["results"]
+    league_name = jsonResponse["league"]["name"]
+
+    return league_name, users
+
+
+def get_user_history(userid):
+    url = 'https://fantasy.premierleague.com/drf/entry/' + str(userid) + '/history'
+    r = requests.get(url)
+    jsonResponse = r.json()
+    seasons = jsonResponse["season"]
+
+    return seasons
+
+
+def extract_user_infos(user):
+
+    user_info = []
+    name = user['player_first_name']
+    surname = user['player_last_name']
+    userid = user['id']
+    entry = user['entry']
+    season = get_user_history(entry)
+    for s in season:
+        user_info.append((entry, s['season'], s['season_name'], name, surname, s['total_points'], s['rank']))
+    
+    return user_info
 
 
 app = Flask(__name__)  # create the application instance :)
@@ -84,7 +115,7 @@ def landing_page_post():
         return redirect(url_for('league_info', league_id=league_id))
     else:
         try:
-            league_name, league_users = fdb.get_league_infos(league_id)
+            league_name, league_users = get_league_infos(league_id)
             league_entry = Leagues(league_name=league_name, league_id=league_id, season='18-19')
         except:
             flash('League Id not found', 'error')
@@ -93,7 +124,7 @@ def landing_page_post():
         for u in league_users:
             team_info = Teams(team_id=u['id'], league_id=u['league'], team_name=u['entry_name'], user_id=u['entry'])
             db.session.add(team_info)
-            user_info = fdb.extract_user_infos(u)
+            user_info = extract_user_infos(u)
             for ui in user_info:
                 ui_info = Users(user_id=ui[0], season=ui[1], season_name=ui[2], name=ui[3], surname=ui[4], points=ui[5], rank=ui[6])
                 db.session.add(ui_info)
