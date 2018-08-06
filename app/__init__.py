@@ -119,7 +119,7 @@ def landing_page_post():
             league_name, league_users = get_league_infos(league_id)
             league_entry = Leagues(league_name=league_name, league_id=league_id, season='18-19')
         except Exception as e:
-            print e
+            print(e)
             flash('League Id not found', 'error')
             return redirect(url_for('landing_page'))
         db.session.add(league_entry)
