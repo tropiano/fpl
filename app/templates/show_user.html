@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+<head>
+<link href="{{ url_for('static', filename='style.css') }}" rel='stylesheet' />
+</head>
+{% block body %}
+  
+<div class="container-fluid">
+  
+    <div class="row">
+        <div id='user'>
+        <h1><b>{{ entries[0][0].name + " " + entries[0][0].surname}}</b></h1>
+        </div>
+    
+    <div class="col-sm-6">
+      <br>
+      
+      <div class="well" id="stats">
+          <h4>User Record</h4> 
+          <br>
+          {% for entry in entries[0] %}
+            <b>{{ entry.season_name }}</b>
+            <br>
+            {{ entry.points }}  <small>points</small> 
+            <br>
+            {{ entry.rank }}  <small>position</small> 
+            <br>
+            <br>
+        {% endfor %}
+        </div>
+    </div>
+    
+    <div class="col-sm-3">
+      <br>
+      
+      <div class="well" id="stats">
+          <h4>Best Season</h4> 
+          <br>
+            <b>{{ best.season_name }}</b>
+            <br>
+            {{ best.points }}  <small>points</small> 
+            <br>
+            {{ best.rank }}  <small>position</small> 
+            <br>
+            <br>
+        </div>
+    </div>
+    
+    <div class="col-sm-3">
+      <br>
+      
+      <div class="well" id="stats">
+          <h4>Worst Season</h4> 
+          <br>
+            <b>{{ worst.season_name }}</b>
+            <br>
+            {{ worst.points }}  <small>points</small> 
+            <br>
+            {{ worst.rank }}  <small>position</small> 
+            <br>
+            <br>
+        </div>
+    </div>
+    
+    </div>
+    </div>
+    	
+{% endblock %}

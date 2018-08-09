@@ -47,6 +47,8 @@ def extract_user_infos(user):
     for s in season:
         user_info.append((entry, s['season'], s['season_name'], name, surname, s['total_points'], s['rank']))
     
+    user_info.append((entry, 13, '2018/19', name, surname, 0, -1))
+    
     return user_info
 
 
@@ -117,6 +119,7 @@ def landing_page_post():
     else:
         try:
             league_name, league_users = get_league_infos(league_id)
+            #print league_users
             league_entry = Leagues(league_name=league_name, league_id=league_id, season='18-19')
         except Exception as e:
             print(e)
@@ -125,16 +128,19 @@ def landing_page_post():
         db.session.add(league_entry)
         for u in league_users:
             team_info = Teams(team_id=u['id'], league_id=u['league'], team_name=u['entry_name'], user_id=u['entry'])
+            #print team_info.team_name
             db.session.add(team_info)
             user_info = extract_user_infos(u)
             for ui in user_info:
-                ui_info = Users(user_id=ui[0], season=ui[1], season_name=ui[2], name=ui[3], surname=ui[4], points=ui[5], rank=ui[6])
-                db.session.add(ui_info)
+                exists = db.session.query(Users.user_id).filter(Users.user_id == ui[0]).filter(Users.season == ui[1]).first() is not None
+                if not exists:
+                    ui_info = Users(user_id=ui[0], season=ui[1], season_name=ui[2], name=ui[3], surname=ui[4], points=ui[5], rank=ui[6])
+                    db.session.add(ui_info)
         db.session.commit()        
         return redirect(url_for('league_info', league_id=league_id))
 
 
-@app.route('/<league_id>')
+@app.route('/league/<league_id>')
 def league_info(league_id):
 
     entries = []
@@ -146,21 +152,43 @@ def league_info(league_id):
         flash('No data for the requested League. Insert League Id in the form below to generate data for this League', 'error')
         return redirect(url_for('landing_page'))
         
-    cur=db.session.query(Users.name, Users.surname, Teams.team_name).join(Teams,Teams.user_id==Users.user_id).filter(
-          Teams.league_id == league_id).group_by(Teams.team_name).all()
+    cur=db.session.query(Users.name, Users.surname, Users.user_id, Teams.team_name, Teams.league_id).join(Teams,Teams.user_id==Users.user_id).filter(Teams.league_id == league_id).group_by(Teams.team_name).all()
     entries.append(cur)
     
-    cur=db.session.query(Users.name, Users.surname, Users.points, Users.season_name).join(Teams,Teams.user_id==Users.user_id).filter(
-          Teams.league_id == league_id).all()
+    cur=db.session.query(Users.name, Users.surname, Users.points, Users.season_name).join(Teams,Teams.user_id == Users.user_id).filter(
+          Teams.league_id == league_id).filter(Users.season != 13).all()
     res_sort = sorted(cur, key = lambda x: x[2], reverse = True)   
     entries.append(res_sort)
 
     cur=db.session.query(Users.name, Users.surname, Users.rank, Users.season_name).join(Teams,Teams.user_id==Users.user_id).filter(
-          Teams.league_id == league_id).all()    
+          Teams.league_id == league_id).filter(Users.season != 13).all()    
     res_sort = sorted(cur, key = lambda x: x[2], reverse = False)  
     entries.append(res_sort)
     
     cur=db.session.query(Leagues.league_name).filter(Leagues.league_id == league_id).all()
     entries.append(cur)
     
-    return render_template('show_entries.html', entries=entries)
+    return render_template('show_league.html', entries=entries)
+
+  
+@app.route('/user/<user_id>')
+def user_info(user_id):
+
+    entries = []
+    
+    cur = db.session.query(Users.name, Users.surname, Users.season_name, Users.points, Users.rank).filter(
+          Users.user_id == user_id).filter(Users.season != 13).order_by(Users.season).all()
+    entries.append(cur)
+    
+    print cur
+    
+    if not entries[0]:
+        flash('No data for the requested User', 'error')
+        return redirect(url_for('landing_page'))
+        
+    seasons = sorted(entries[0], key=lambda x: x.points)
+    best_season = seasons[-1]
+    worst_season = seasons[0]
+    #print best_season
+    
+    return render_template('show_user.html', entries=entries, best=best_season, worst=worst_season)

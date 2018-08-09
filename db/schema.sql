@@ -20,7 +20,7 @@ drop table if exists users;
 create table users(
     id integer primary key autoincrement,
     user_id integer not null,
-    season text not null,
+    season integer not null,
     season_name text not null,
     name text not null,
     surname text not null,

@@ -25,9 +25,9 @@
 		     <tr>
                  <td>{{ loop.index }}</td>
                  <td>{{ entry.team_name }}</td>
-                 <td>{{ entry.name + " " + entry.surname }}</td>
+                 <td><a href="{{ url_for('user_info', user_id=entry.user_id) }}">{{ entry.name + " " + entry.surname }}</a></td>
                  <td>{{ entry.points }}</td>
-		     </tr>	
+		     </tr>
            {% endfor %}
           </table>
       </div>

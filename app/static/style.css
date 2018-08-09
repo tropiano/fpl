@@ -50,6 +50,11 @@
     color: #191d32;
 }
 
+#user{
+    text-align: center;
+    color: #7c809b;
+}
+
 .well{
     background: white;
 }
