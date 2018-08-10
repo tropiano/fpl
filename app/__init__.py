@@ -180,8 +180,6 @@ def user_info(user_id):
           Users.user_id == user_id).filter(Users.season != 13).order_by(Users.season).all()
     entries.append(cur)
     
-    print cur
-    
     if not entries[0]:
         flash('No data for the requested User', 'error')
         return redirect(url_for('landing_page'))
