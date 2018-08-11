@@ -14,6 +14,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 import requests
+import os
 #from wtforms import Form, BooleanField, StringField, FloatField, DateField, IntegerField, validators
  
 def get_league_infos(league_id):
