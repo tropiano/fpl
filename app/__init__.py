@@ -71,8 +71,8 @@ class Leagues(db.Model):
     season = db.Column(db.String(120), nullable=False)
     league_id = db.Column(db.Integer, nullable=False)
     league_name = db.Column(db.String(120), nullable=False)
-    db.UniqueConstraint('league_id', 'league_name', name='uix_1')
-    #teams = db.relationship('Teams', backref='league', lazy='dynamic')
+    # db.UniqueConstraint('league_id', 'league_name', name='uix_1')
+    # teams = db.relationship('Teams', backref='league', lazy='dynamic')
 
 
 class Teams(db.Model):
