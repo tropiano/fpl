@@ -56,7 +56,7 @@ def extract_user_infos(user):
 app = Flask(__name__)  # create the application instance :)
 app.config.from_object(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/fpl'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ('DATABASE_URL')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 #db.Model.metadata.reflect(db.engine)
 app.secret_key = 'T5%&/yHDfSTs'
