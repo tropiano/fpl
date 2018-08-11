@@ -21,10 +21,10 @@ def get_league_infos(league_id):
     url = 'https://fantasy.premierleague.com/drf/leagues-classic-standings/'+str(league_id)+'?phase=1&le-page=1&ls-page=1'
     r = requests.get(url)
     jsonResponse = r.json()
-    users = jsonResponse["new_entries"]["results"]
+    users = jsonResponse["standings"]["results"]
     league_name = jsonResponse["league"]["name"]
-
-    return league_name, users
+    if len(users) <= 40:
+        return league_name, users
 
 
 def get_user_history(userid):
@@ -39,8 +39,8 @@ def get_user_history(userid):
 def extract_user_infos(user):
 
     user_info = []
-    name = user['player_first_name']
-    surname = user['player_last_name']
+    name = user['player_name'].split(" ")[0]
+    surname = user['player_name'].split(" ")[1]
     userid = user['id']
     entry = user['entry']
     season = get_user_history(entry)
@@ -54,41 +54,83 @@ def extract_user_infos(user):
 
 app = Flask(__name__)  # create the application instance :)
 app.config.from_object(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fpl.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/fpl'
 db = SQLAlchemy(app)
-db.Model.metadata.reflect(db.engine)
+#db.Model.metadata.reflect(db.engine)
 app.secret_key = 'T5%&/yHDfSTs'
 
 
 #create the models for Sqlalchemy 
 class Leagues(db.Model):
-
-    __table__ = db.Model.metadata.tables['leagues']        
     
+    __tablename__ = "leagues"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    season = db.Column(db.String(120), nullable=False)
+    league_id = db.Column(db.Integer, nullable=False)
+    league_name = db.Column(db.String(120), nullable=False)
+    db.UniqueConstraint('league_id', 'league_name', name='uix_1')
     #teams = db.relationship('Teams', backref='league', lazy='dynamic')
 
 
 class Teams(db.Model):
     
-    __table__ = db.Model.metadata.tables['teams']
+    __tablename__ = "teams"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, nullable=False)
+    league_id = db.Column(db.Integer, nullable=False)
+    team_name = db.Column(db.String(120), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
 
     #results = db.relationship('Results', backref='teams', lazy='dynamic')
 
 
 class Users(db.Model):
 
-    __table__ = db.Model.metadata.tables['users']        
+    __tablename__ = "users"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    season = db.Column(db.Integer, nullable=False)
+    season_name = db.Column(db.String(120), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    surname = db.Column(db.String(120), nullable=False)
+    points = db.Column(db.Integer, nullable=False)
+    rank = db.Column(db.Integer, nullable=False)
+    
         
 
 class Stats(db.Model):
 
-    __table__ = db.Model.metadata.tables['stats']    
+    __tablename__ = "stats"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    team_id = db.Column(db.Integer, nullable=False)
+    season = db.Column(db.Integer, nullable=False)
+    team_value = db.Column(db.Integer, nullable=False)
+    bank_money = db.Column(db.Integer, nullable=False)
+    gameweek = db.Column(db.Integer, nullable=False)
+    points = db.Column(db.Integer, nullable=False)
+    points_bench = db.Column(db.Integer, nullable=False)
+    best_player = db.Column(db.String(120), nullable=False)
+    worst_player = db.Column(db.String(120), nullable=False)
+    rank = db.Column(db.Integer, nullable=False)
+    rank_gw = db.Column(db.Integer, nullable=False)
+    best_player_points = db.Column(db.Integer, nullable=False)
+    worst_player_points = db.Column(db.Integer, nullable=False)
+        
 
 
 class Players(db.Model):
 
-    __table__ = db.Model.metadata.tables['players']    
-
+    __tablename__ = "players"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    player_id = db.Column(db.Integer, nullable=False)
+    player_name = db.Column(db.String(120), nullable=False)
+    player_points = db.Column(db.Integer, nullable=False)
+    gameweek = db.Column(db.Integer, nullable=False)
 
 
 db.create_all()
@@ -113,17 +155,18 @@ def landing_page_post():
     # Populate also users with the API call
     existing_league_ids = db.session.query(Leagues.league_id).all()
     league_list = [i[0] for i in existing_league_ids]
-    #print league_list
+    # print(league_list)
     if int(league_id) in league_list:
         return redirect(url_for('league_info', league_id=league_id))
     else:
         try:
             league_name, league_users = get_league_infos(league_id)
-            #print league_users
+            # print(league_users)
+            
             league_entry = Leagues(league_name=league_name, league_id=league_id, season='18-19')
         except Exception as e:
             print(e)
-            flash('League Id not found', 'error')
+            flash('League Id not found or League has more than 40 users', 'error')
             return redirect(url_for('landing_page'))
         db.session.add(league_entry)
         for u in league_users:
@@ -152,7 +195,7 @@ def league_info(league_id):
         flash('No data for the requested League. Insert League Id in the form below to generate data for this League', 'error')
         return redirect(url_for('landing_page'))
         
-    cur=db.session.query(Users.name, Users.surname, Users.user_id, Teams.team_name, Teams.league_id).join(Teams,Teams.user_id==Users.user_id).filter(Teams.league_id == league_id).group_by(Teams.team_name).all()
+    cur=db.session.query(Users.name, Users.surname, Users.user_id, Teams.team_name, Teams.league_id).join(Teams,Teams.user_id==Users.user_id).filter(Teams.league_id == league_id).group_by(Teams.team_name, Users.name, Users.surname, Users.user_id, Teams.league_id).all()
     entries.append(cur)
     
     cur=db.session.query(Users.name, Users.surname, Users.points, Users.season_name).join(Teams,Teams.user_id == Users.user_id).filter(
@@ -178,7 +221,7 @@ def user_info(user_id):
     
     cur = db.session.query(Users.name, Users.surname, Users.season_name, Users.points, Users.rank).filter(
           Users.user_id == user_id).filter(Users.season != 13).order_by(Users.season).all()
-    entries.append(cur)
+    entries.append(cur) 
     
     if not entries[0]:
         flash('No data for the requested User', 'error')
