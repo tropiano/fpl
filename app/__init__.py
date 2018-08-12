@@ -214,6 +214,12 @@ def league_info(league_id):
     cur=db.session.query(Leagues.league_name).filter(Leagues.league_id == league_id).all()
     entries.append(cur)
     
+    cur=db.session.query(Users.name, Users.surname, Stats.rank_gw, Stats.rank).join(Teams, Teams.user_id==Users.user_id).join(Stats, Teams.team_id==Stats.team_id).filter(Teams.league_id == league_id).group_by(Users.name, Users.surname, Stats.rank_gw, Users.user_id, Stats.rank).all()
+    res_sort = sorted(cur, key = lambda x: x[2], reverse = False)
+    entries.append(res_sort)
+    res_sort = sorted(cur, key = lambda x: x[3], reverse = False)
+    entries.append(res_sort)
+    
     return render_template('show_league.html', entries=entries)
 
   

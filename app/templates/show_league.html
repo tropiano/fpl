@@ -49,6 +49,7 @@
         {% endfor %}
         </div>
     </div>
+    
     <div class="col-sm-3">
         <br>
       <div class="well" id="stats">
@@ -65,6 +66,39 @@
       {% endfor %}
       </div>    
     </div>
+    
+    <div class="col-sm-3">
+        <br>
+      <div class="well" id="stats">
+        <h4>Best Players</h4> 
+        <h4>this Gameweek</h4>
+        <br>
+        {% for entry in entries[4][0:3] %}
+          {{ entry.name + " " + entry.surname }}
+          <br>
+          {{ entry.rank_gw }} <small>position</small> 
+          <br>
+          <br>
+      {% endfor %}
+      </div>    
+    </div>
+    
+    <div class="col-sm-3">
+        <br>
+      <div class="well" id="stats">
+        <h4>Best Players</h4> 
+        <h4>Overall</h4>
+        <br>
+        {% for entry in entries[5][0:3] %}
+          {{ entry.name + " " + entry.surname }}
+          <br>
+          {{ entry.rank }} <small>position</small> 
+          <br>
+          <br>
+      {% endfor %}
+      </div>    
+    </div>
+
     </div>
 </div>
 </div>
