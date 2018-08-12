@@ -3,9 +3,11 @@
 #import model
 import requests
 import psycopg2
+import os
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+
 
 
 # Connecting to the database file
