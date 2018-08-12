@@ -198,7 +198,7 @@ def league_info(league_id):
         flash('No data for the requested League. Insert League Id in the form below to generate data for this League', 'error')
         return redirect(url_for('landing_page'))
         
-    cur=db.session.query(Users.name, Users.surname, Users.user_id, Teams.team_name, Teams.league_id).join(Teams,Teams.user_id==Users.user_id).filter(Teams.league_id == league_id).group_by(Teams.team_name, Users.name, Users.surname, Users.user_id, Teams.league_id).all()
+    cur=db.session.query(Users.name, Users.surname, Users.user_id, Teams.team_name, Teams.league_id, Stats.points).join(Teams,Teams.user_id==Users.user_id).join(Stats, Stats.team_id == Teams.team_id).filter(Teams.league_id == league_id).group_by(Teams.team_name, Users.name, Users.surname, Users.user_id, Teams.league_id, Stats.points).order_by(Stats.points.desc()).all()
     entries.append(cur)
     
     cur=db.session.query(Users.name, Users.surname, Users.points, Users.season_name).join(Teams,Teams.user_id == Users.user_id).filter(
