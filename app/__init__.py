@@ -55,6 +55,7 @@ def extract_user_infos(user):
 
 app = Flask(__name__)  # create the application instance :)
 app.config.from_object(__name__)
+#uncomment to test locally
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/fpl'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
