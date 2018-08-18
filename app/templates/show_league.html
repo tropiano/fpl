@@ -39,7 +39,7 @@
           <h4>Best Players Record</h4> 
           <h4>by Points</h4>
           <br>
-          {% for entry in entries[1][0:3] %}
+          {% for entry in entries[1][0:1] %}
             {{ entry.name + " " + entry.surname }}
             {{ entry.season_name }}
             <br>
@@ -56,7 +56,7 @@
         <h4>Best Players Record</h4> 
         <h4>by Ranking</h4>
         <br>
-        {% for entry in entries[2][0:3] %}
+        {% for entry in entries[2][0:1] %}
           {{ entry.name + " " + entry.surname }}
           {{ entry.season_name }}
           <br>
@@ -73,7 +73,7 @@
         <h4>Best Players</h4> 
         <h4>this Gameweek</h4>
         <br>
-        {% for entry in entries[4][0:3] %}
+        {% for entry in entries[4][0:1] %}
           {{ entry.name + " " + entry.surname }}
           <br>
           {{ entry.rank_gw }} <small>position</small> 
@@ -89,7 +89,7 @@
         <h4>Best Players</h4> 
         <h4>Overall</h4>
         <br>
-        {% for entry in entries[5][0:3] %}
+        {% for entry in entries[5][0:1] %}
           {{ entry.name + " " + entry.surname }}
           <br>
           {{ entry.rank }} <small>position</small> 

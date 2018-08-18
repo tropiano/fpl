@@ -104,7 +104,6 @@ if __name__ == "__main__":
             gw_stats.bank_money = team_stats.bank_money
             gw_stats.rank = team_stats.rank
             gw_stats.rank_gw = team_stats.rank_gw
-            
         else:
             session.add(team_stats)
     session.commit()
