@@ -111,6 +111,11 @@ if __name__ == "__main__":
             gw_stats.rank_gw = team_stats.rank_gw
         else:
             session.add(team_stats)
+        # get the user object and update the points by summing up all gw points
+        user_update = session.query(Users).filter(Users.season==13).filter(Users.user_id==u[0]).first()
+        user_gws = session.query(Stats).filter(Stats.team_id==u[2])
+        user_points = sum(u.points for u in user_gws)
+        user_update.points = user_points
     session.commit()
     #conn = sqlite3.connect(sqlite_file)
     #c = conn.cursor()
