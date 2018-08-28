@@ -71,7 +71,7 @@ def get_user_info(userid, i):
     jsonResponse = r.json()
     data = jsonResponse["entry_history"]
     team_stats = Stats(team_id=userid[2], season=13, team_value=data['value'], bank_money=data['bank'], gameweek=data['event'], points=data['points']-data['event_transfers_cost'], points_bench=data['points_on_bench'], best_player='', worst_player='', rank=data['overall_rank'], rank_gw=data['rank'], best_player_points=0, worst_player_points=0)
-
+    
     return team_stats
 
 
@@ -101,7 +101,8 @@ if __name__ == "__main__":
     for i in range(1, gw):
         for u in users:
             team_stats = get_user_info(u, i)
-            print(team_stats.rank_gw)
+            print(team_stats.team_id)
+            print(team_stats.points)
             gw_stats = session.query(Stats).filter(Stats.team_id==u[2]).filter(Stats.gameweek==team_stats.gameweek).first()
             #gw_stats = session.query(Stats).all()
             #print gw_stats
