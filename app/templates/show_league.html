@@ -17,8 +17,9 @@
           <table class="table-striped" style="width:100%">
               <tr>
                <th></th>
-		       <th>Team</th>
+		           <th>Team</th>
                <th>Manager</th>
+               <th>GW Points</th>
                <th>Points</th>
 		     </tr>
 	       {% for entry in entries[0] %}
@@ -26,6 +27,7 @@
                  <td>{{ loop.index }}</td>
                  <td>{{ entry.team_name }}</td>
                  <td><a href="{{ url_for('user_info', user_id=entry.user_id) }}">{{ entry.name + " " + entry.surname }}</a></td>
+                 <td>{{ entry.gw_points }}</td>
                  <td>{{ entry.points }}</td>
 		     </tr>
            {% endfor %}
@@ -36,7 +38,7 @@
       <br>
       
       <div class="well" id="stats">
-          <h4>Best Players Record</h4> 
+          <h4>Best Player Record</h4> 
           <h4>by Points</h4>
           <br>
           {% for entry in entries[1][0:1] %}
@@ -53,7 +55,7 @@
     <div class="col-sm-3">
         <br>
       <div class="well" id="stats">
-        <h4>Best Players Record</h4> 
+        <h4>Best Player Record</h4> 
         <h4>by Ranking</h4>
         <br>
         {% for entry in entries[2][0:1] %}
@@ -70,7 +72,7 @@
     <div class="col-sm-3">
         <br>
       <div class="well" id="stats">
-        <h4>Best Players</h4> 
+        <h4>Best Player</h4> 
         <h4>this Gameweek</h4>
         <br>
         {% for entry in entries[4][0:1] %}
@@ -78,6 +80,7 @@
           <br>
           {{ entry.rank_gw }} <small>position</small> 
           <br>
+          {{ entry.points }} <small>points</small>
           <br>
       {% endfor %}
       </div>    
@@ -86,7 +89,7 @@
     <div class="col-sm-3">
         <br>
       <div class="well" id="stats">
-        <h4>Best Players</h4> 
+        <h4>Best Player</h4> 
         <h4>Overall</h4>
         <br>
         {% for entry in entries[5][0:1] %}

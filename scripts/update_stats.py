@@ -62,13 +62,14 @@ class Teams(Base):
     user_id = Column(Integer, nullable=False)
 
 
-def get_user_info(userid):
+def get_user_info(userid, i):
     
-    url = 'https://fantasy.premierleague.com/drf/entry/' + str(userid[0])
+    url = 'https://fantasy.premierleague.com/drf/entry/' + str(userid[0]) + '/event/' + str(i) + '/picks'
     r = requests.get(url)
     jsonResponse = r.json()
-    data = jsonResponse["entry"]
-    team_stats = Stats(team_id=userid[2], season=13, team_value=data['value'], bank_money=data['bank'], gameweek=data['current_event'], points=data['summary_event_points'], points_bench=0, best_player='', worst_player='', rank=data['summary_overall_rank'], rank_gw=data['summary_event_rank'], best_player_points=0, worst_player_points=0)
+    data = jsonResponse["entry_history"]
+    team_stats = Stats(team_id=userid[2], season=13, team_value=data['value'], bank_money=data['bank'], gameweek=data['event'], points=data['points']-data['event_transfers_cost'], points_bench=data['points_on_bench'], best_player='', worst_player='', rank=data['overall_rank'], rank_gw=data['rank'], best_player_points=0, worst_player_points=0)    
+    
     return team_stats
 
 
@@ -85,14 +86,19 @@ def get_league_infos(league_id):
     
 if __name__ == "__main__":
     
-    #league_users = get_league_infos(153875)[1]
+    url = 'https://fantasy.premierleague.com/drf/entry/' + str(1)
+    r = requests.get(url)
+    jsonResponse = r.json()
+    data = jsonResponse["entry"]
+    gw = data['current_event']
 
     users = session.query(Users.user_id, Teams.team_name, Teams.team_id).join(Teams, Teams.user_id == Users.user_id).group_by(Users.user_id, Teams.team_name, Teams.team_id).all()
     #print users
     #league_users = [u[0] for u in users]
     
     for u in users:
-        team_stats = get_user_info(u)   
+        team_stats = get_user_info(u, gw)   
+        print(team_stats.rank_gw)
         gw_stats = session.query(Stats).filter(Stats.team_id==u[2]).filter(Stats.gameweek==team_stats.gameweek).first()
         #gw_stats = session.query(Stats).all()
         #print gw_stats
@@ -106,6 +112,11 @@ if __name__ == "__main__":
             gw_stats.rank_gw = team_stats.rank_gw
         else:
             session.add(team_stats)
+        # get the user object and update the points by summing up all gw points
+        user_update = session.query(Users).filter(Users.season==13).filter(Users.user_id==u[0]).first()
+        user_gws = session.query(Stats).filter(Stats.team_id==u[2])
+        user_points = sum(u.points for u in user_gws)
+        user_update.points = user_points
     session.commit()
     #conn = sqlite3.connect(sqlite_file)
     #c = conn.cursor()
