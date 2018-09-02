@@ -205,8 +205,9 @@ def league_info(league_id):
         
      
     cur=db.session.query(Users.name, Users.surname, Teams.team_name, Stats.gameweek, Stats.points.label('gw_points'), 
-    Users.points, Stats.team_value, Stats.points_bench).distinct(Users.name).join(Teams,Teams.user_id==Users.user_id).join(
-    Stats,Stats.team_id==Teams.team_id).filter(Users.season == 13).order_by(Users.name, Stats.gameweek.desc()).all()
+    Users.points, Stats.team_value, Stats.points_bench, Users.user_id).distinct(Users.name).join(
+    Teams,Teams.user_id==Users.user_id).join(Stats,Stats.team_id==Teams.team_id).filter(Users.season == 13).order_by(
+    Users.name, Stats.gameweek.desc()).all()
 
     cur_order = sorted(cur, key= lambda x: x[5],reverse=True)
     entries.append(cur_order)
