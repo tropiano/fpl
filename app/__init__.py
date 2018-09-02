@@ -203,11 +203,13 @@ def league_info(league_id):
         flash('No data for the requested League. Insert League Id in the form below to generate data for this League', 'error')
         return redirect(url_for('landing_page'))
         
-    cur=db.session.query(Users.name, Users.surname, Users.user_id, Teams.team_name, Teams.league_id, Users.points).join(
-    Teams,Teams.user_id==Users.user_id).filter(Teams.league_id == league_id).filter(Users.season == 13).group_by(
-    Teams.team_name, Users.name, Users.surname, Users.user_id, Teams.league_id, Users.points).order_by(
-    Users.points.desc()).all()
-    entries.append(cur)
+     
+    cur=db.session.query(Users.name, Users.surname, Teams.team_name, Stats.gameweek, Stats.points.label('gw_points'), 
+    Users.points, Stats.team_value, Stats.points_bench).distinct(Users.name).join(Teams,Teams.user_id==Users.user_id).join(
+    Stats,Stats.team_id==Teams.team_id).filter(Users.season == 13).order_by(Users.name, Stats.gameweek.desc()).all()
+
+    cur_order = sorted(cur, key= lambda x: x[5],reverse=True)
+    entries.append(cur_order)
     
     #print cur
     
@@ -228,7 +230,7 @@ def league_info(league_id):
         Teams.team_id).join(Teams, Teams.user_id==Users.user_id).join(
         Stats, Teams.team_id==Stats.team_id).filter(Teams.league_id == league_id).filter(
         Stats.rank_gw != 0).order_by(Teams.team_id, Stats.gameweek.desc()).all()
-    #print(cur)
+    print(cur)
     res_sort = sorted(cur, key = lambda x: x[2], reverse = False)
     entries.append(res_sort)
     res_sort = sorted(cur, key = lambda x: x[3], reverse = False)

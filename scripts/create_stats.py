@@ -98,7 +98,7 @@ if __name__ == "__main__":
     users = session.query(Users.user_id, Teams.team_name, Teams.team_id).join(Teams, Teams.user_id == Users.user_id).group_by(Users.user_id, Teams.team_name, Teams.team_id).all()
     #print users
     #league_users = [u[0] for u in users]
-    for i in range(1, gw):
+    for i in range(1, gw + 1):
         for u in users:
             team_stats = get_user_info(u, i)
             print(team_stats.team_id)
