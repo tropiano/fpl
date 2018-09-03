@@ -247,8 +247,14 @@ def user_info(user_id):
     
     cur = db.session.query(Users.name, Users.surname, Users.season_name, Users.points, Users.rank).filter(
           Users.user_id == user_id).filter(Users.season != 13).order_by(Users.season).all()
-    entries.append(cur) 
-    
+    entries.append(cur)
+
+    cur=db.session.query(Users.name, Users.surname, Teams.team_name, Stats.bank_money, Users.points, 
+    Stats.gameweek, (Stats.team_value/10.).label('team_value'), Users.user_id).distinct(Users.name).join(
+    Teams,Teams.user_id==Users.user_id).join(Stats,Stats.team_id==Teams.team_id).filter(Users.season == 13).order_by(
+    Users.name, Stats.gameweek.desc()).all() 
+    entries.append(cur)
+
     if not entries[0]:
         flash('No data for the requested User', 'error')
         return redirect(url_for('landing_page'))

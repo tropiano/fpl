@@ -20,8 +20,7 @@
 		           <th>Team</th>
                <th>Manager</th>
                <th>Points</th>
-               <th>GW Points</th>
-               <th>on Bench</th>
+               <th>GW Points (on bench)</th>
                <th>Team Value</th>
 		     </tr>
 	       {% for entry in entries[0] %}
@@ -30,8 +29,7 @@
                  <td>{{ entry.team_name }}</td>
                  <td><a href="{{ url_for('user_info', user_id=entry.user_id) }}">{{ entry.name + " " + entry.surname }}</a></td>
                  <td>{{ entry.points }}</td>
-                 <td>{{ entry.gw_points }}</td>
-                 <td>{{ entry.points_bench }}</td>
+                 <td>{{ entry.gw_points }} ({{ entry.points_bench }})</td>
                  <td>{{ entry.team_value/10 }} £</td>
                 </tr>
            {% endfor %}

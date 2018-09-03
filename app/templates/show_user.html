@@ -29,7 +29,7 @@
         </div>
     </div>
     
-    <div class="col-sm-3">
+    <div class="col-sm-2">
       <br>
       
       <div class="well" id="stats">
@@ -45,7 +45,7 @@
         </div>
     </div>
     
-    <div class="col-sm-3">
+    <div class="col-sm-2">
       <br>
       
       <div class="well" id="stats">
@@ -60,8 +60,34 @@
             <br>
         </div>
     </div>
-    
+
+    <div class="col-sm-2">
+        <br>
+        
+        <div class="well" id="stats">
+            <h4>Team Value</h4> 
+            <br>
+            <br>
+              {{ entries[1][0].team_value|int }} M
+            <br>
+            <br>
+        </div>
     </div>
+
+    <div class="col-sm-2">
+        <br>
+        
+        <div class="well" id="stats">
+            <h4>Average Points</h4> 
+            <br>
+              {{ entries[1][0].points/entries[1][0].gameweek }} 
+            <br>
+            <br>
+              points per gameweek
+          </div>
+      </div>
     </div>
+
+</div>
     	
 {% endblock %}
